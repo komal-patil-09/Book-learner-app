@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter Flashcards - BookLearner</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="navbar">
+        <div class="logo">⚡ BookLearner</div>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="index.html">← Back to Catalog</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container flashcard-container">
+        <h2 id="book-title">Loading Book...</h2>
+        <p class="instruction">Click or tap the card to flip and view key takeaways.</p>
+
+        <!-- Interactive 3D Flashcard -->
+        <div class="flashcard" id="card" onclick="flipCard()">
+            <div class="flashcard-inner">
+                <div class="flashcard-front">
+                    <span id="chapter-number">Chapter 1</span>
+                    <h3 id="front-text">Loading concept...</h3>
+                    <p class="tap-hint">✨ Click to flip card</p>
+                </div>
+                <div class="flashcard-back">
+                    <h3>Key Takeaway</h3>
+                    <p id="back-text">Loading summary...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Controls -->
+        <div class="controls">
+            <button class="btn-ctrl" onclick="prevCard()">← Prev</button>
+            <span id="counter">1 / 3</span>
+            <button class="btn-ctrl" onclick="nextCard()">Next →</button>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>

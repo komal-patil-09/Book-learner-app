@@ -1,0 +1,368 @@
+/* Google Font Import */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+/* Global Resets & Theme Variables */
+:root {
+    --bg-main: #0B0914;               /* Deep Midnight Purple Base */
+    --bg-surface: #15102A;            /* Elevated Purple Surface */
+    --bg-card: rgba(28, 20, 52, 0.7);  /* Glassmorphism Card Fill */
+    
+    --primary: #9D4EDD;               /* Electric Violet */
+    --primary-light: #C77DFF;         /* Neon Lilac Accent */
+    --accent-green: #10B981;          /* Forest Emerald */
+    --accent-green-glow: #059669;     /* Deep Emerald Glow */
+    
+    --text-main: #F8FAFC;             /* Crisp Pure Light Text */
+    --text-muted: #94A3B8;            /* Soft Slate Subtext */
+    --border-glow: rgba(157, 78, 221, 0.25);
+    --border-green-glow: rgba(16, 185, 129, 0.25);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+body {
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-image: 
+        radial-gradient(circle at 15% 20%, rgba(157, 78, 221, 0.18) 0%, transparent 40%),
+        radial-gradient(circle at 85% 80%, rgba(16, 185, 129, 0.15) 0%, transparent 40%);
+    background-attachment: fixed;
+}
+
+/* Navigation Bar */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(15, 10, 30, 0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-glow);
+    padding: 1.2rem 2.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.logo {
+    font-size: 1.4rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, var(--primary-light), var(--accent-green));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 1.8rem;
+}
+
+.nav-links a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+}
+
+.nav-links a:hover {
+    color: var(--primary-light);
+    text-shadow: 0 0 10px rgba(199, 125, 255, 0.5);
+}
+
+/* Container Layout */
+.container {
+    max-width: 950px;
+    margin: 2.5rem auto;
+    padding: 0 1.5rem;
+    flex: 1;
+}
+
+/* Hero Section */
+.hero {
+    text-align: center;
+    margin-bottom: 3.5rem;
+}
+
+.hero h1 {
+    font-size: 2.8rem;
+    font-weight: 800;
+    margin-bottom: 0.8rem;
+    letter-spacing: -1px;
+    background: linear-gradient(135deg, #FFFFFF 30%, var(--primary-light));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.hero p {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Catalog Book Grid */
+.book-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.book-card {
+    background: var(--bg-card);
+    backdrop-filter: blur(10px);
+    border-radius: 18px;
+    overflow: hidden;
+    border: 1px solid var(--border-glow);
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.book-card:hover {
+    transform: translateY(-8px);
+    border-color: var(--primary-light);
+    box-shadow: 0 15px 35px rgba(157, 78, 221, 0.25);
+}
+
+.book-cover {
+    height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: #FFFFFF;
+}
+
+.atomic-habits { 
+    background: linear-gradient(135deg, #4A127B, #7B2CBF, #10B981); 
+}
+
+.zero-to-one { 
+    background: linear-gradient(135deg, #064E3B, #059669, #7B2CBF); 
+}
+
+.book-info {
+    padding: 1.8rem;
+}
+
+.book-info h3 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 0.2rem;
+    color: #FFFFFF;
+}
+
+.book-info p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 1.2rem;
+}
+
+.badge {
+    background: rgba(16, 185, 129, 0.15);
+    color: var(--accent-green);
+    border: 1px solid var(--border-green-glow);
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    display: inline-block;
+    margin-bottom: 1.2rem;
+}
+
+.btn {
+    display: block;
+    text-align: center;
+    background: linear-gradient(135deg, var(--primary), var(--accent-green));
+    color: white;
+    padding: 0.8rem;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    opacity: 0.92;
+    transform: scale(1.02);
+    box-shadow: 0 5px 20px rgba(16, 185, 129, 0.3);
+}
+
+/* Flashcard Viewer Page */
+.flashcard-container {
+    text-align: center;
+}
+
+#book-title {
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, #FFFFFF, var(--primary-light));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.instruction {
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+    font-size: 0.95rem;
+}
+
+/* --- FIXED 3D FLASHCARD STYLING --- */
+.flashcard {
+    background-color: transparent;
+    width: 100%;
+    max-width: 540px;
+    height: 320px;
+    margin: 0 auto 2rem auto;
+    perspective: 1000px;
+    cursor: pointer;
+    position: relative;
+}
+
+.flashcard-inner {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
+    border-radius: 20px;
+}
+
+/* Flip Trigger Class */
+.flashcard.flipped .flashcard-inner {
+    transform: rotateY(180deg);
+    -webkit-transform: rotateY(180deg);
+}
+
+.flashcard-front, .flashcard-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 2.5rem;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+}
+
+/* Card Front: Deep Purple Glass */
+.flashcard-front {
+    background: linear-gradient(135deg, rgba(30, 20, 60, 0.98), rgba(15, 10, 30, 0.98));
+    border: 1.5px solid var(--border-glow);
+    color: var(--text-main);
+    z-index: 2;
+}
+
+.flashcard-front span {
+    color: var(--accent-green);
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid var(--border-green-glow);
+    padding: 0.3rem 0.9rem;
+    border-radius: 20px;
+    font-weight: 700;
+    margin-bottom: 1.2rem;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+}
+
+.flashcard-front h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    line-height: 1.5;
+}
+
+.tap-hint {
+    margin-top: 1.8rem;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+/* Card Back: Glowing Forest Emerald Theme */
+.flashcard-back {
+    background: linear-gradient(135deg, rgba(6, 78, 59, 0.98), rgba(15, 10, 30, 0.98));
+    border: 1.5px solid var(--border-green-glow);
+    color: white;
+    transform: rotateY(180deg);
+    -webkit-transform: rotateY(180deg);
+    z-index: 1;
+}
+
+.flashcard-back h3 {
+    color: var(--primary-light);
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 1rem;
+}
+
+.flashcard-back p {
+    font-size: 1.15rem;
+    line-height: 1.6;
+    font-weight: 500;
+    color: #F1F5F9;
+}
+
+/* Controls & Counter */
+.controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1.8rem;
+}
+
+.btn-ctrl {
+    background: var(--bg-surface);
+    color: var(--text-main);
+    border: 1.5px solid var(--border-glow);
+    padding: 0.75rem 1.6rem;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-ctrl:hover {
+    background: var(--primary);
+    border-color: var(--primary-light);
+    box-shadow: 0 0 15px rgba(157, 78, 221, 0.4);
+}
+
+#counter {
+    color: var(--text-muted);
+    font-weight: 700;
+    font-size: 1rem;
+    letter-spacing: 1px;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 1.8rem;
+    background: rgba(10, 7, 20, 0.9);
+    border-top: 1px solid rgba(157, 78, 221, 0.15);
+    color: var(--text-muted);
+    font-size: 0.88rem;
+}
