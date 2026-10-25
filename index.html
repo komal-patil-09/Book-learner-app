@@ -713,4 +713,38 @@
     ReactDOM.render(<App />, document.getElementById('root'));
   </script>
 </body>
+<script type="module">
+    // 1. Import Firebase Core, Auth, and Firestore
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
+
+    // 2. Your Firebase Config
+    const firebaseConfig = {
+      apiKey: "AIzaSyCpD5Pb8oQl7fkcEhw36nPTBUrAg6l2L70",
+      authDomain: "book-learner-app.firebaseapp.com",
+      projectId: "book-learner-app",
+      storageBucket: "book-learner-app.firebasestorage.app",
+      messagingSenderId: "225126768050",
+      appId: "1:225126768050:web:2be85bb979b34b68f4d8ab",
+      measurementId: "G-1GMV26TH2N"
+    };
+
+    // 3. Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // 4. Expose Auth & Firestore to global window for your React code
+    window.firebaseAuth = auth;
+    window.firebaseDb = db;
+    window.GoogleAuthProvider = GoogleAuthProvider;
+    window.signInWithPopup = signInWithPopup;
+    window.signOut = signOut;
+    window.onAuthStateChanged = onAuthStateChanged;
+    window.firestoreDoc = doc;
+    window.firestoreSetDoc = setDoc;
+    window.firestoreGetDoc = getDoc;
+  </script>
+</body>
 </html>
