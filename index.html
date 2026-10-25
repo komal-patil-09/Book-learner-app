@@ -399,6 +399,40 @@
       }
     ];
 
+    const [user, setUser] = useState(null);
+
+  // Listen for login / logout state
+  useEffect(() => {
+    const checkAuth = setInterval(() => {
+      if (window.firebaseAuth && window.onAuthStateChanged) {
+        clearInterval(checkAuth);
+        window.onAuthStateChanged(window.firebaseAuth, (currentUser) => {
+          setUser(currentUser);
+        });
+      }
+    }, 200);
+    return () => clearInterval(checkAuth);
+  }, []);
+
+  // Trigger Google Login
+  const handleGoogleLogin = async () => {
+    if (window.firebaseAuth && window.signInWithPopup) {
+      try {
+        const provider = new window.GoogleAuthProvider();
+        await window.signInWithPopup(window.firebaseAuth, provider);
+      } catch (error) {
+        console.error("Login Error:", error);
+      }
+    }
+  };
+
+  // Trigger Logout
+  const handleLogout = async () => {
+    if (window.firebaseAuth && window.signOut) {
+      await window.signOut(window.firebaseAuth);
+    }
+  };
+
     // --- MAIN REACT APPLICATION COMPONENT ---
     function App() {
       const [currentView, setCurrentView] = useState('library'); // 'library' or 'reader'
@@ -450,15 +484,34 @@
                   <p className="text-xs text-slate-500 font-medium">Master Masterpieces in Minutes</p>
                 </div>
               </div>
-              <div className="flex items-center space-x-4">
-                {currentView === 'reader' && (
-                  <button 
-                    onClick={closeBook}
-                    className="inline-flex items-center text-sm font-semibold text-indigo-600 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 px-3.5 py-2 rounded-xl transition">
-                    ← Back to Library
-                  </button>
-                )}
-              </div>
+              <div className="flex items-center space-x-3">
+  {user ? (
+    <div className="flex items-center space-x-3">
+      <span className="text-xs font-bold text-slate-700 hidden sm:inline">
+        {user.displayName || user.email}
+      </span>
+      <button 
+        onClick={handleLogout}
+        className="text-xs font-semibold text-rose-600 hover:text-rose-800 bg-rose-50 hover:bg-rose-100 px-3.5 py-2 rounded-xl transition">
+        Logout
+      </button>
+    </div>
+  ) : (
+    <button 
+      onClick={handleGoogleLogin}
+      className="inline-flex items-center text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-xl shadow-sm transition">
+      Sign In with Google
+    </button>
+  )}
+
+  {currentView === 'reader' && (
+    <button 
+      onClick={closeBook}
+      className="inline-flex items-center text-sm font-semibold text-indigo-600 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 px-3.5 py-2 rounded-xl transition">
+      ← Back to Library
+    </button>
+  )}
+</div>
             </div>
           </header>
 
