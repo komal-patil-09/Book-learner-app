@@ -4,21 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Book Learner - Master Chapter & Flashcard Hub</title>
-  <!-- Tailwind CSS via CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- React & ReactDOM CDNs -->
   <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-  <!-- Babel Standalone CDN -->
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <!-- Lucide Icons -->
-  <script src="https://unpkg.com/lucide@latest"></script>
   <style>
     .perspective-1000 { perspective: 1000px; }
     .transform-style-3d { transform-style: preserve-3d; }
     .backface-hidden { backface-visibility: hidden; }
     .rotate-y-180 { transform: rotateY(180deg); }
-    /* Custom scrollbar */
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: #f1f5f9; }
     ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
@@ -28,10 +22,39 @@
 <body class="bg-slate-50 text-slate-900 font-sans antialiased min-h-screen selection:bg-indigo-500 selection:text-white">
   <div id="root"></div>
 
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCpD5Pb8oQl7fkcEhw36nPTBUrAg6l2L70",
+      authDomain: "book-learner-app.firebaseapp.com",
+      projectId: "book-learner-app",
+      storageBucket: "book-learner-app.firebasestorage.app",
+      messagingSenderId: "225126768050",
+      appId: "1:225126768050:web:2be85bb979b34b68f4d8ab",
+      measurementId: "G-1GMV26TH2N"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    window.firebaseAuth = auth;
+    window.firebaseDb = db;
+    window.GoogleAuthProvider = GoogleAuthProvider;
+    window.signInWithPopup = signInWithPopup;
+    window.signOut = signOut;
+    window.onAuthStateChanged = onAuthStateChanged;
+    window.firestoreDoc = doc;
+    window.firestoreSetDoc = setDoc;
+    window.firestoreGetDoc = getDoc;
+  </script>
+
   <script type="text/babel">
     const { useState, useEffect, useMemo } = React;
 
-    // --- COMPLETE BOOK DATABASE (ALL 18 BOOKS & CHAPTERS) ---
     const BOOKS_DATA = [
       {
         id: "lords-of-easy-money",
@@ -119,17 +142,7 @@
           { number: 7, title: "Freedom", takeaway: "Controlling your time and autonomy is the highest, most meaningful dividend money can pay." },
           { number: 8, title: "Man in the Car Paradox", takeaway: "People want wealth to signal importance to others, but true admiration comes from humility." },
           { number: 9, title: "Wealth is What You Don't See", takeaway: "Spending money to show people you have money is the fastest way to have less money." },
-          { number: 10, title: "Save Money", takeaway: "Building wealth has less to do with your income and investment returns, and more to do with your savings rate." },
-          { number: 11, title: "Reasonableness > Rationality", takeaway: "Aim to be financially reasonable rather than coldly rational, because humans need strategies they can actually stick with." },
-          { number: 12, title: "Surprise!", takeaway: "History is the study of surprise; future financial environments will always feature unpredictable major shocks." },
-          { number: 13, title: "Room for Error", takeaway: "A good financial plan must account for errors, bad luck, and unforeseen downturns to survive." },
-          { number: 14, title: "You'll Change", takeaway: "Long-term career and financial planning must accept that your future desires and goals will evolve." },
-          { number: 15, title: "Nothing’s Free", takeaway: "Market volatility and stress are not fees charged for investing; they are market entry tickets (the price of admission)." },
-          { number: 16, title: "You & Me", takeaway: "Avoid taking financial cues from people playing a completely different financial game than you." },
-          { number: 17, title: "The Seduction of Pessimism", takeaway: "Pessimism sounds intelligent and captures attention, but historical optimism wins over long horizons." },
-          { number: 18, title: "When You Believe Anything", takeaway: "People easily believe comforting narratives that validate their worldview during periods of uncertainty." },
-          { number: 19, title: "Confessions", takeaway: "Summary integration: moderation, humility, and patience anchor durable financial independence." },
-          { number: 20, title: "The Confessions of Morgan Housel", takeaway: "Financial freedom is ultimately about prioritizing independence over high-status consumption." }
+          { number: 10, title: "Save Money", takeaway: "Building wealth has less to do with your income and investment returns, and more to do with your savings rate." }
         ]
       },
       {
@@ -144,213 +157,7 @@
           { number: 2, title: "Party Like It’s 1999", takeaway: "Sustainable businesses focus on fundamental business execution and customer value rather than chasing market hype bubbles." },
           { number: 3, title: "All Happy Companies Are Different", takeaway: "Monopolies escape destructive competition by creating unique value, whereas competing businesses destroy profit margins." },
           { number: 4, title: "The Ideology of Competition", takeaway: "Intense corporate competition breeds ideological conflict and tunnel vision; escaping competition leads to true profits." },
-          { number: 5, title: "Last Mover Advantage", takeaway: "A great business builds proprietary technology or network effects to dominate the distant future rather than chasing early trends." },
-          { number: 6, title: "You Are Not a Lottery Ticket", takeaway: "Rigorous long-term planning and disciplined execution outweigh blind luck in determining company success." },
-          { number: 7, title: "Follow the Money", takeaway: "Power law distributions govern venture capital and business success; a tiny fraction of investments generate almost all returns." },
-          { number: 8, title: "Secrets", takeaway: "Valuable, overlooked truths about the world exist for founders willing to look where others do not." },
-          { number: 9, title: "Foundations", takeaway: "Initial structural choices—such as co-founder chemistry, board composition, and equity allocation—are almost impossible to alter later." },
-          { number: 10, title: "The Mechanics of Mafia", takeaway: "Build a cohesive company culture where employees share deep personal alignment and intense shared mission focus." },
-          { number: 11, title: "If You Build It, Will They Come?", takeaway: "Superior technology is useless without a comprehensive, deliberate strategy for sales and distribution." },
-          { number: 12, title: "Man and Machine", takeaway: "The future belongs to companies that use computers to empower humans rather than try to replace them entirely." },
-          { number: 13, title: "Seeing Green", takeaway: "Successful green tech businesses must master proprietary technology, timing, lean structure, and grand distribution plans." },
-          { number: 14, title: "The Founder’s Paradox", takeaway: "Founders often possess extreme, polarizing traits that are simultaneously critical to venture success and prone to excess." }
-        ]
-      },
-      {
-        id: "you-can-win",
-        title: "You Can Win",
-        author: "Shiv Khera",
-        category: "Personal Development",
-        color: "from-rose-500 to-pink-700",
-        description: "A step-by-step tool kit for top winners through positive attitude, character, and motivation.",
-        chapters: [
-          { number: 1, title: "Importance of Attitude", takeaway: "Attitude acts as the underlying lens through which challenges are managed; it dictates your ultimate trajectory." },
-          { number: 2, title: "Success Strategies", takeaway: "Success is predictable and systematic, driven by adherence to timeless personal and professional principles." },
-          { number: 3, title: "Motivation", takeaway: "Intrinsic, value-driven inner drive sustains long-term performance far better than external rewards." },
-          { number: 4, title: "Building Positive Self-Esteem", takeaway: "Self-belief is built step-by-step through keeping promises to yourself and accumulating small victories." },
-          { number: 5, title: "Interpersonal Skills", takeaway: "Building genuine human relationships requires empathy, active listening, and mutual respect." },
-          { number: 6, title: "Forming Good Habits and Character", takeaway: "Character is formed by daily micro-habits that dictate ethical boundaries under pressure." },
-          { number: 7, title: "Goal Setting", takeaway: "Vague wishes fail; clear, written, timeline-bound goals direct focused daily action." },
-          { number: 8, title: "Values and Vision", takeaway: "Core moral values provide an inner compass that prevents compromise during turbulent times." }
-        ]
-      },
-      {
-        id: "psycho-cybernetics",
-        title: "Psycho-Cybernetics",
-        author: "Maxwell Maltz",
-        category: "Psychology & Self-Help",
-        color: "from-violet-500 to-fuchsia-800",
-        description: "Updated and expanded self-help guide to reprogramming your subconscious mind for success.",
-        chapters: [
-          { number: 1, title: "The Self-Image: Your Key to a Better Life", takeaway: "Your outer behavior and achievements will always match your internal mental self-image." },
-          { number: 2, title: "Discovering the Success Mechanism Within You", takeaway: "The human brain operates as an automated goal-seeking guidance mechanism once a clear target is set." },
-          { number: 3, title: "De-Hypnotize Yourself From False Beliefs", takeaway: "Most personal constraints are outdated hypnotic beliefs rather than immutable physical laws." },
-          { number: 4, title: "How to Utilize the Power of Mental Pictures", takeaway: "Vivid mental rehearsal programs the subconscious mind to execute complex physical and psychological tasks smoothly." },
-          { number: 5, title: "Relax Away Your Tension", takeaway: "Physical and mental relaxation clears friction, unlocking optimal natural performance." },
-          { number: 6, title: "You Can Acquire the Habit of Happiness", takeaway: "Happiness is a learned psychological habit rather than an accident of external circumstances." },
-          { number: 7, title: "Malfunctions of the Success Mechanism", takeaway: "Worry, fixation on failure, and emotional scar tissue jam your internal guidance system." },
-          { number: 8, title: "Ingredients of the Success-Type Personality", takeaway: "Cultivate Direction, Understanding, Courage, Charity, Esteem, Self-Confidence, and Acceptance (DUCACE)." },
-          { number: 9, title: "The Failure Mechanism — How to Make It Work", takeaway: "Recognize and sidestep emotional traps like frustration, aggressiveness, loneliness, and uncertainty." },
-          { number: 10, title: "How to Remove Emotional Scars", takeaway: "Conscious forgiveness and letting go of past emotional trauma provide an emotional facelift for the mind." },
-          { number: 11, title: "How to Unlock Your Real Personality", takeaway: "Drop artificial defense mechanisms to let your natural, creative self shine outward." },
-          { number: 12, title: "Tranquilizers — Prescription for Living", takeaway: "Maintain mental equilibrium and emotional peace by living fully in the present moment." }
-        ]
-      },
-      {
-        id: "power-of-subconscious-mind",
-        title: "The Power of Your Subconscious Mind",
-        author: "Joseph Murphy",
-        category: "Psychology & Self-Help",
-        color: "from-blue-600 to-indigo-900",
-        description: "Harnessing the hidden subconscious forces to overcome anxiety, gain health, and build success.",
-        chapters: [
-          { number: 1, title: "The Treasure House Within You", takeaway: "Your subconscious mind accepts instructions literally and manifests whatever thoughts you dwell upon." },
-          { number: 2, title: "How Your Mind Works", takeaway: "The conscious mind thinks logically; the subconscious mind feels and acts upon habit, emotion, and repetition." },
-          { number: 3, title: "The Miracle-Working Power of Your Subconscious", takeaway: "Mental imagery directed inward can heal emotional blocks and solve complex external problems." },
-          { number: 4, title: "Mental Healings in Ancient Times", takeaway: "Belief and expectancy have formed the basis of psychological healing across all human history." },
-          { number: 5, title: "Mental Healings in Modern Times", takeaway: "Shifting internal emotional states clears psychosomatic illness and mental friction." },
-          { number: 6, title: "Practical Techniques in Mental Healing", takeaway: "Systematic visualization and affirmations rewrite negative mental scripts." },
-          { number: 7, title: "The Tendency of the Subconscious Is Lifeward", takeaway: "The default pattern of subconscious energy pushes toward growth, health, and restoration." },
-          { number: 8, title: "How to Get the Results You Want", takeaway: "Let go of forceful anxiety; state your goal clearly and let quiet confidence finish the job." },
-          { number: 9, title: "How to Use Subconscious Power for Wealth", takeaway: "Wealth is a state of mind; abundance flows when you drop scarcity beliefs." },
-          { number: 10, title: "Your Right to Be Rich", takeaway: "Desire for financial growth is natural, provided it is anchored in value creation." },
-          { number: 11, title: "Subconscious Mind as a Partner in Success", takeaway: "Intuition and sudden insights are often processed solutions from your subconscious partner." },
-          { number: 12, title: "How Scientists Use the Subconscious", takeaway: "Framing critical questions before sleep leverages subconscious processing during rest." },
-          { number: 13, title: "Your Subconscious and Wonderful Sleep", takeaway: "Clearing mental clutter before bed ensures restorative rest and subtle psychological problem-solving." },
-          { number: 14, title: "Your Subconscious Mind and Marital Problems", takeaway: "Harmony in relationships begins by aligning mutual emotional expectations and offering unconditional respect." },
-          { number: 15, title: "Your Subconscious Mind and Your Happiness", takeaway: "Happiness is a conscious choice that becomes a deeply ingrained subconscious reflex over time." },
-          { number: 16, title: "Harmonious Human Relations", takeaway: "Projecting goodwill toward others changes how they respond to you automatically." },
-          { number: 17, title: "How to Use Forgiveness in Your Subconscious", takeaway: "Holding onto resentment harms you internally; true mental freedom requires active forgiveness." },
-          { number: 18, title: "How Your Subconscious Removes Mental Blocks", takeaway: "Fear creates mental blocks; visualizing a clear path forward dissolves internal resistance." },
-          { number: 19, title: "Removing Fear Using Subconscious Power", takeaway: "Confront fear by visualizing absolute safety, courage, and competence." },
-          { number: 20, title: "Stay Young in Spirit Forever", takeaway: "Mental enthusiasm, curiosity, and positive expectation keep your spirit youthful regardless of age." }
-        ]
-      },
-      {
-        id: "richest-man-in-babylon",
-        title: "The Richest Man in Babylon",
-        author: "George S. Clason",
-        category: "Finance & Personal Development",
-        color: "from-amber-500 to-yellow-700",
-        description: "Timeless Babylonian parables on thrift, saving 10%, and growing wealth safely.",
-        chapters: [
-          { number: 1, title: "The Man Who Desired Gold", takeaway: "Financial struggle stems from a lack of financial education, not a lack of income opportunities." },
-          { number: 2, title: "The Richest Man in Babylon", takeaway: "Wealth is acquired through a repeatable system: part of all you earn is yours to keep." },
-          { number: 3, title: "Seven Cures for a Lean Purse", takeaway: "Save 10%, control expenses, multiply your gold, guard capital, own your home, insure future income, and build earning capacity." },
-          { number: 4, title: "Meet the Goddess of Luck", takeaway: "Good luck visits those who take prompt action on prepared opportunities." },
-          { number: 5, title: "The Five Laws of Gold", takeaway: "Gold stays with those who invest wisely, protects itself from risk, and flees speculative schemes." },
-          { number: 6, title: "The Gold Lender of Babylon", takeaway: "Safeguard principal capital carefully; never lend without guaranteed repayment security." },
-          { number: 7, title: "The Walls of Babylon", takeaway: "Adequate preparation and strong defenses protect a family and a business from unexpected hazards." },
-          { number: 8, title: "The Camel Trader of Babylon", takeaway: "Taking responsibility for past debts and facing financial obligations head-on restores personal honor and wealth." },
-          { number: 9, title: "The Clay Tablets of Babylon", takeaway: "Documented budgeting and consistent savings plans provide a reliable ladder out of debt." },
-          { number: 10, title: "The Luckiest Man in Babylon", takeaway: "True fulfillment comes from combining productive work with a deep commitment to family and responsibility." }
-        ]
-      },
-      {
-        id: "think-and-grow-rich",
-        title: "Think and Grow Rich",
-        author: "Napoleon Hill",
-        category: "Finance & Personal Development",
-        color: "from-amber-600 to-orange-800",
-        description: "The 13 principles of personal achievement and financial success studied over 20 years.",
-        chapters: [
-          { number: 1, title: "The Power of Thought", takeaway: "Thoughts are things; materialized wealth begins as a clear, focused mental concept." },
-          { number: 2, title: "Desire", takeaway: "A burning, obsessive desire with a clear deadline is the starting point of all achievement." },
-          { number: 3, title: "Faith", takeaway: "Visualization and repeated self-belief transform mental goals into physical realities." },
-          { number: 4, title: "Auto-Suggestion", takeaway: "Consciously feed your subconscious mind positive commands and objective financial targets." },
-          { number: 5, title: "Specialized Knowledge", takeaway: "General knowledge is cheap; targeted, actionable, organized specialized knowledge creates value." },
-          { number: 6, title: "Imagination", takeaway: "Imagination is the workshop of the mind where all human plans and inventions are created." },
-          { number: 7, title: "Organized Planning", takeaway: "Translate ideas into actionable steps through structured, flexible plans." },
-          { number: 8, title: "Decision", takeaway: "Indecision is a habit born of fear; successful people make decisions promptly and change them slowly." },
-          { number: 9, title: "Persistence", takeaway: "Sustained persistence is the heavy carbon that turns initial failure into diamond-hard success." },
-          { number: 10, title: "Power of the Master Mind", takeaway: "Aligning with a cooperative group of brilliant minds multiplies your knowledge and execution capacity." },
-          { number: 11, title: "Sex Transmutation", takeaway: "Redirecting primal creative energy into ambitious career and business goals accelerates achievement." },
-          { number: 12, title: "The Subconscious Mind", takeaway: "The subconscious acts as a connecting link between finite human effort and infinite intelligence." },
-          { number: 13, title: "The Brain", takeaway: "The human brain functions as a broadcasting and receiving station for mental frequencies." },
-          { number: 14, title: "The Sixth Sense", takeaway: "Intuition and creative genius emerge through deep alignment with accumulated experience and subconscious processing." },
-          { number: 15, title: "Outwitting the Six Ghosts of Fear", takeaway: "Conquer poverty, criticism, ill health, loss of love, old age, and death by mastering your mental state." }
-        ]
-      },
-      {
-        id: "how-to-win-friends",
-        title: "How to Win Friends and Influence People",
-        author: "Dale Carnegie",
-        category: "Communication & Leadership",
-        color: "from-teal-600 to-emerald-800",
-        description: "The classic manual on building interpersonal trust, handling people, and winning influence.",
-        chapters: [
-          { number: 1, title: "Fundamental Techniques in Handling People", takeaway: "Avoid criticism and complaints; offer honest, sincere appreciation instead to motivate human action." },
-          { number: 2, title: "Six Ways to Make People Like You", takeaway: "Become genuinely interested in other people, listen actively, and speak about what matters to them." },
-          { number: 3, title: "How to Win People to Your Way of Thinking", takeaway: "Never argue; respect differing viewpoints, admit mistakes quickly, and let the other person feel the idea is theirs." },
-          { number: 4, title: "Be a Leader: Change People Without Offense", takeaway: "Praise improvement before critique, ask questions instead of giving direct orders, and save people's pride." }
-        ]
-      },
-      {
-        id: "what-young-india-wants",
-        title: "What Young India Wants",
-        author: "Chetan Bhagat",
-        category: "Indian Literature & Society",
-        color: "from-orange-500 to-red-700",
-        description: "Essays and speeches on Indian youth, governance, education reform, and social transformation.",
-        chapters: [
-          { number: 1, title: "Our Society", takeaway: "Casteism, outdated social norms, and hypocrisy stifle individual liberty and national progress." },
-          { number: 2, title: "Our Politics", takeaway: "Young citizens must engage in political accountability rather than treating politics as dirty or untouchable." },
-          { number: 3, title: "Our Infrastructure & Education", takeaway: "Education systems must transition from rote memorization to creative problem-solving and technical skills." },
-          { number: 4, title: "Corruption & Governance", takeaway: "Systemic corruption robs youth of opportunity; transparent meritocracy is mandatory for national rise." },
-          { number: 5, title: "Great India", takeaway: "True national greatness is achieved when individual responsibility matches national ambition." }
-        ]
-      },
-      {
-        id: "elon-musk",
-        title: "Elon Musk",
-        author: "Walter Isaacson",
-        category: "Biography & Business",
-        color: "from-slate-700 to-zinc-900",
-        description: "An intimate biography of the visionary innovator behind SpaceX, Tesla, and Neuralink.",
-        chapters: [
-          { number: 1, title: "Childhood & Roots", takeaway: "Early isolation, intense reading, and a harsh environment forged an ultra-resilient, risk-tolerant mindset." },
-          { number: 2, title: "Zip2 and PayPal Days", takeaway: "Relentless engineering hours and sheer stubbornness can disrupt bloated legacy industries." },
-          { number: 3, title: "Founding SpaceX", takeaway: "Vertical integration and questioning every rule of manufacturing slash costs and accelerate innovation." },
-          { number: 4, title: "Rescuing Tesla", takeaway: "Putting all personal capital on the line during existential corporate crises separates true visionaries from managers." },
-          { number: 5, title: "SolarCity and Energy Innovation", takeaway: "Sustainable energy ecosystems require simultaneous reinvention of generation, storage, and consumption." },
-          { number: 6, title: "Neuralink, Boring Company, and AI", takeaway: "Tackle science-fiction problems with physical engineering physics rather than theoretical speculation." },
-          { number: 7, title: "Twitter Takeover & Hardcore Culture", takeaway: "Ultra-flat management structures and absolute operational urgency can jolt stagnant entities awake." }
-        ]
-      },
-      {
-        id: "rich-dad-poor-dad",
-        title: "Rich Dad Poor Dad",
-        author: "Robert Kiyosaki",
-        category: "Finance & Personal Development",
-        color: "from-emerald-600 to-green-900",
-        description: "What the rich teach their kids about money that the poor and middle class do not.",
-        chapters: [
-          { number: 1, title: "Lesson 1: The Rich Don't Work for Money", takeaway: "Work to learn skills, not just for a paycheck; escape the rat race by shifting focus to assets." },
-          { number: 2, title: "Lesson 2: Why Teach Financial Literacy?", takeaway: "Know the fundamental difference between an asset (puts money in your pocket) and a liability (takes money out)." },
-          { number: 3, title: "Lesson 3: Mind Your Own Business", takeaway: "Keep your day job while quietly building and reinvesting in your asset column." },
-          { number: 4, title: "Lesson 4: History of Taxes & Corporations", takeaway: "Use corporate entities and legal structures to protect assets and minimize tax exposure." },
-          { number: 5, title: "Lesson 5: The Rich Invent Money", takeaway: "Financial creativity and calculated risk-taking create opportunities out of nothing." },
-          { number: 6, title: "Lesson 6: Work to Learn", takeaway: "Prioritize acquiring broad skills (sales, management, cash flow) over climbing a corporate ladder." },
-          { number: 7, title: "Lesson 7: Overcoming Obstacles", takeaway: "Fear, cynicism, laziness, and arrogance prevent people from achieving financial freedom." },
-          { number: 8, title: "Lesson 8: Getting Started", takeaway: "Cultivate a strong reason why you want wealth, pick daily habits wisely, and take action." }
-        ]
-      },
-      {
-        id: "the-business-school",
-        title: "The Business School",
-        author: "Robert Kiyosaki",
-        category: "Entrepreneurship & Business",
-        color: "from-blue-600 to-indigo-800",
-        description: "For people who like helping people, exploring the 8 hidden values of network marketing.",
-        chapters: [
-          { number: 1, title: "Value 1: True Equal Opportunity", takeaway: "Network marketing offers a democratic business model open to anyone willing to put in effort." },
-          { number: 2, title: "Value 2: Life-Changing Business Education", takeaway: "Real-world business education builds emotional resilience, leadership, and public communication." },
-          { number: 3, title: "Value 3: Friends Who Lift You Up", takeaway: "Surround yourself with entrepreneurs who encourage growth rather than critics who pull you down." },
-          { number: 4, title: "Value 4: The Value of Duplication", takeaway: "Build a system that others can easily copy to scale your business effortlessly." },
-          { number: 5, title: "Value 5: Leadership Skills", takeaway: "True leaders inspire emotional commitment and guide people toward uncovering their own potential." },
-          { number: 6, title: "Value 6: Net-Working", takeaway: "Building a web of collaborative relationships forms the cornerstone of modern economic leverage." },
-          { number: 7, title: "Value 7: Core Values Over Short-Term Gain", takeaway: "Long-term business success is rooted in integrity, mentorship, and lifting others up." },
-          { number: 8, title: "Value 8: Living Your Dreams", takeaway: "Financial freedom provides the ultimate freedom to live life on your own schedule and terms." }
+          { number: 5, title: "Last Mover Advantage", takeaway: "A great business builds proprietary technology or network effects to dominate the distant future rather than chasing early trends." }
         ]
       },
       {
@@ -364,89 +171,52 @@
           { number: 1, title: "The Surprising Power of Atomic Habits", takeaway: "Tiny 1% improvements compound into massive long-term results over a year." },
           { number: 2, title: "How Your Habits Shape Your Identity", takeaway: "Focus on identity-based habits; decide who you wish to become, then prove it with small wins." },
           { number: 3, title: "4 Simple Steps to Better Habits", takeaway: "The habit loop consists of Cue, Craving, Response, and Reward." },
-          { number: 4, title: "The Man Who Didn't Look Right", takeaway: "Awareness comes before transformation; notice your current habits before changing them." },
-          { number: 5, title: "The Best Way to Start a New Habit", takeaway: "Use implementation intentions ('I will [BEHAVIOR] at [TIME] in [LOCATION]')." },
-          { number: 6, title: "Environment Matters More Than Motivation", takeaway: "Design your physical environment to make good cues obvious and bad cues invisible." },
-          { number: 7, title: "The Secret to Self-Control", takeaway: "Avoid temptation rather than relying on sheer willpower; make bad habits impractical." },
-          { number: 8, title: "How to Make a Habit Irresistible", takeaway: "Bundle an action you need to do with an action you want to do (temptation bundling)." },
-          { number: 9, title: "Role of Family and Friends", takeaway: "We adopt habits from our culture; surround yourself with a tribe that shares your target behavior." },
-          { number: 10, title: "How to Find and Fix Bad Habits", takeaway: "Reframe your mindset; highlight the benefits of breaking bad habits to reduce cravings." },
-          { number: 11, title: "Walk Slowly, Never Backward", takeaway: "Standardize before you optimize; make the first two minutes of a new habit effortless." },
-          { number: 12, title: "The Law of Least Effort", takeaway: "Reduce friction by setting up your environment for smooth, frictionless execution." },
-          { number: 13, title: "Stop Procrastinating with the 2-Minute Rule", takeaway: "Scale down any new habit so it takes two minutes or less to perform." },
-          { number: 14, title: "How to Make Good Habits Inevitable", takeaway: "Use commitment devices and automated tracking to ensure accountability." },
-          { number: 15, title: "The Cardinal Rule of Behavior Change", takeaway: "What is immediately rewarded is repeated; what is immediately punished is avoided." },
-          { number: 16, title: "How to Stick with Good Habits Every Day", takeaway: "Use visual habit trackers and never miss twice when you slip up." },
-          { number: 17, title: "Accountability Partners", takeaway: "Social pressure and an accountability partner keep you honest and committed." },
-          { number: 18, title: "The Truth About Talent (Genetics)", takeaway: "Pick the right arena; design habits that match your natural genetic strengths." },
-          { number: 19, title: "The Goldilocks Rule", takeaway: "Keep motivation high by working on challenges right at the edge of your current abilities." },
-          { number: 20, title: "The Downside of Creating Habits", takeaway: "Habits bring mastery, but you must periodically review your routines to avoid becoming complacent." }
-        ]
-      },
-      {
-        id: "indian-literature-classics",
-        title: "Indian Literature Classics & Modern Non-Fiction",
-        author: "Various Authors",
-        category: "Indian Literature & Society",
-        color: "from-amber-600 to-rose-800",
-        description: "A curated collection of impactful literary works including Malala, Shyamchi Aai, and Raj Shamani.",
-        chapters: [
-          { number: 1, title: "I Am Malala (Malala Yousafzai)", takeaway: "Education is an absolute human right; courage in speaking truth to power creates global change." },
-          { number: 2, title: "Phite Andharache Jaal", takeaway: "Overcoming social hardships through resilience, social reforms, and self-belief illuminates even the darkest challenges." },
-          { number: 3, title: "Shyamchi Aai (Sane Guruji)", takeaway: "Unconditional maternal love, moral integrity, compassion, and discipline form the foundation of upright character." },
-          { number: 4, title: "Build, Don't Talk (Raj Shamani)", takeaway: "Action and tangible output always outweigh overthinking; speed, execution, and continuous creation drive modern success." }
+          { number: 4, title: "Environment Matters More Than Motivation", takeaway: "Design your physical environment to make good cues obvious and bad cues invisible." }
         ]
       }
     ];
 
-    const [user, setUser] = useState(null);
-
-  // Listen for login / logout state
-  useEffect(() => {
-    const checkAuth = setInterval(() => {
-      if (window.firebaseAuth && window.onAuthStateChanged) {
-        clearInterval(checkAuth);
-        window.onAuthStateChanged(window.firebaseAuth, (currentUser) => {
-          setUser(currentUser);
-        });
-      }
-    }, 200);
-    return () => clearInterval(checkAuth);
-  }, []);
-
-  // Trigger Google Login
-  const handleGoogleLogin = async () => {
-    if (window.firebaseAuth && window.signInWithPopup) {
-      try {
-        const provider = new window.GoogleAuthProvider();
-        await window.signInWithPopup(window.firebaseAuth, provider);
-      } catch (error) {
-        console.error("Login Error:", error);
-      }
-    }
-  };
-
-  // Trigger Logout
-  const handleLogout = async () => {
-    if (window.firebaseAuth && window.signOut) {
-      await window.signOut(window.firebaseAuth);
-    }
-  };
-
-    // --- MAIN REACT APPLICATION COMPONENT ---
     function App() {
-      const [currentView, setCurrentView] = useState('library'); // 'library' or 'reader'
+      const [currentView, setCurrentView] = useState('library');
       const [selectedBook, setSelectedBook] = useState(null);
-      const [activeTab, setActiveTab] = useState('chapters'); // 'chapters' or 'flashcards'
+      const [activeTab, setActiveTab] = useState('chapters');
       const [searchQuery, setSearchQuery] = useState('');
       const [selectedCategory, setSelectedCategory] = useState('All');
       const [currentCardIndex, setCurrentCardIndex] = useState(0);
       const [isFlipped, setIsFlipped] = useState(false);
+      const [user, setUser] = useState(null);
 
-      // Categories list
-      const categories = ['All', 'Finance & Economics', 'Personal Development', 'Biography & Sports', 'Entrepreneurship & Business', 'Psychology & Self-Help', 'Indian Literature & Society', 'Communication & Leadership'];
+      useEffect(() => {
+        const interval = setInterval(() => {
+          if (window.firebaseAuth && window.onAuthStateChanged) {
+            clearInterval(interval);
+            window.onAuthStateChanged(window.firebaseAuth, (currentUser) => {
+              setUser(currentUser);
+            });
+          }
+        }, 200);
+        return () => clearInterval(interval);
+      }, []);
 
-      // Filtered books
+      const handleGoogleLogin = async () => {
+        if (window.firebaseAuth && window.signInWithPopup) {
+          try {
+            const provider = new window.GoogleAuthProvider();
+            await window.signInWithPopup(window.firebaseAuth, provider);
+          } catch (error) {
+            console.error("Login failed:", error);
+          }
+        }
+      };
+
+      const handleLogout = async () => {
+        if (window.firebaseAuth && window.signOut) {
+          await window.signOut(window.firebaseAuth);
+        }
+      };
+
+      const categories = ['All', 'Finance & Economics', 'Personal Development', 'Biography & Sports', 'Entrepreneurship & Business', 'Indian Literature & Leadership'];
+
       const filteredBooks = useMemo(() => {
         return BOOKS_DATA.filter(book => {
           const matchesSearch = book.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
@@ -472,7 +242,6 @@
 
       return (
         <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900">
-          {/* Navbar */}
           <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200 shadow-sm">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
               <div className="flex items-center space-x-3 cursor-pointer" onClick={closeBook}>
@@ -485,77 +254,68 @@
                 </div>
               </div>
               <div className="flex items-center space-x-3">
-  {user ? (
-    <div className="flex items-center space-x-3">
-      <span className="text-xs font-bold text-slate-700 hidden sm:inline">
-        {user.displayName || user.email}
-      </span>
-      <button 
-        onClick={handleLogout}
-        className="text-xs font-semibold text-rose-600 hover:text-rose-800 bg-rose-50 hover:bg-rose-100 px-3.5 py-2 rounded-xl transition">
-        Logout
-      </button>
-    </div>
-  ) : (
-    <button 
-      onClick={handleGoogleLogin}
-      className="inline-flex items-center text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-xl shadow-sm transition">
-      Sign In with Google
-    </button>
-  )}
+                {user ? (
+                  <div className="flex items-center space-x-3">
+                    <span className="text-xs font-bold text-slate-700 hidden sm:inline">
+                      {user.displayName || user.email}
+                    </span>
+                    <button 
+                      onClick={handleLogout}
+                      className="text-xs font-semibold text-rose-600 hover:text-rose-800 bg-rose-50 hover:bg-rose-100 px-3.5 py-2 rounded-xl transition">
+                      Logout
+                    </button>
+                  </div>
+                ) : (
+                  <button 
+                    onClick={handleGoogleLogin}
+                    className="inline-flex items-center text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-xl shadow-sm transition">
+                    Sign In with Google
+                  </button>
+                )}
 
-  {currentView === 'reader' && (
-    <button 
-      onClick={closeBook}
-      className="inline-flex items-center text-sm font-semibold text-indigo-600 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 px-3.5 py-2 rounded-xl transition">
-      ← Back to Library
-    </button>
-  )}
-</div>
+                {currentView === 'reader' && (
+                  <button 
+                    onClick={closeBook}
+                    className="inline-flex items-center text-sm font-semibold text-indigo-600 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 px-3.5 py-2 rounded-xl transition">
+                    ← Back to Library
+                  </button>
+                )}
+              </div>
             </div>
           </header>
 
-          {/* Main Content Area */}
           <main className="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
             {currentView === 'library' ? (
               <div>
-                {/* Hero Banner */}
-                <div className="bg-gradient-to-r from-indigo-600 via-violet-600 to-purple-700 rounded-3xl p-8 sm:p-12 text-white shadow-xl mb-8 relative overflow-hidden">
-                  <div className="relative z-10 max-w-2xl">
+                <div className="bg-gradient-to-r from-indigo-600 via-violet-600 to-purple-700 rounded-3xl p-8 sm:p-12 text-white shadow-xl mb-8">
+                  <div className="max-w-2xl">
                     <span className="bg-white/20 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider mb-4 inline-block">
                       Ultimate Knowledge Hub
                     </span>
                     <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight mb-4">
-                      Master 18 Bestselling Books & Core Takeaways
+                      Master Key Books & Core Takeaways
                     </h2>
                     <p className="text-indigo-100 text-base sm:text-lg mb-6 leading-relaxed">
                       Browse chapter summaries, test your knowledge with interactive flashcards, and accelerate your personal growth.
                     </p>
-                    {/* Search Bar */}
-                    <div className="relative">
-                      <input 
-                        type="text" 
-                        placeholder="Search by book title or author..." 
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full bg-white text-slate-900 placeholder-slate-400 px-5 py-3.5 pl-12 rounded-2xl shadow-lg focus:outline-none focus:ring-4 focus:ring-indigo-300 font-medium text-sm transition"
-                      />
-                      <svg className="w-5 h-5 text-slate-400 absolute left-4 top-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                      </svg>
-                    </div>
+                    <input 
+                      type="text" 
+                      placeholder="Search by book title or author..." 
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full bg-white text-slate-900 placeholder-slate-400 px-5 py-3.5 rounded-2xl shadow-lg focus:outline-none focus:ring-4 focus:ring-indigo-300 font-medium text-sm transition"
+                    />
                   </div>
                 </div>
 
-                {/* Category Filters */}
-                <div className="flex items-center space-x-2 overflow-x-auto pb-4 mb-8 scrollbar-thin">
+                <div className="flex items-center space-x-2 overflow-x-auto pb-4 mb-8">
                   {categories.map((cat) => (
                     <button
                       key={cat}
                       onClick={() => setSelectedCategory(cat)}
-                      className={`px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap transition shadow-sm ${
+                      className={`px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap transition ${
                         selectedCategory === cat 
-                          ? 'bg-indigo-600 text-white shadow-indigo-200' 
+                          ? 'bg-indigo-600 text-white' 
                           : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-100'
                       }`}
                     >
@@ -564,73 +324,58 @@
                   ))}
                 </div>
 
-                {/* Book Grid */}
-                {filteredBooks.length === 0 ? (
-                  <div className="text-center py-16 bg-white rounded-3xl border border-slate-200 shadow-sm">
-                    <p className="text-slate-500 font-medium text-lg">No books found matching your search.</p>
-                    <button 
-                      onClick={() => { setSearchQuery(''); setSelectedCategory('All'); }}
-                      className="mt-4 px-4 py-2 bg-indigo-600 text-white font-bold rounded-xl text-sm"
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredBooks.map((book) => (
+                    <div 
+                      key={book.id}
+                      onClick={() => openBook(book)}
+                      className="bg-white rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition duration-300 cursor-pointer flex flex-col justify-between overflow-hidden group"
                     >
-                      Reset Filters
-                    </button>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {filteredBooks.map((book) => (
-                      <div 
-                        key={book.id}
-                        onClick={() => openBook(book)}
-                        className="bg-white rounded-3xl border border-slate-200/80 shadow-sm hover:shadow-xl hover:-translate-y-1 transition duration-300 cursor-pointer flex flex-col justify-between overflow-hidden group"
-                      >
-                        <div className={`h-3 bg-gradient-to-r ${book.color}`}></div>
-                        <div className="p-6 flex-1 flex flex-col justify-between">
-                          <div>
-                            <div className="flex items-center justify-between mb-3">
-                              <span className="text-xs font-extrabold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-lg">
-                                {book.category.split('&')[0]}
-                              </span>
-                              <span className="text-xs font-bold text-slate-400 bg-slate-100 px-2 py-1 rounded-md">
-                                {book.chapters.length} Chapters
-                              </span>
-                            </div>
-                            <h3 className="text-xl font-bold text-slate-900 group-hover:text-indigo-600 transition mb-1">
-                              {book.title}
-                            </h3>
-                            <p className="text-xs font-semibold text-slate-500 mb-3">By {book.author}</p>
-                            <p className="text-slate-600 text-sm line-clamp-2 leading-relaxed">
-                              {book.description}
-                            </p>
-                          </div>
-                          <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between">
-                            <span className="text-xs font-bold text-indigo-600 group-hover:translate-x-1 transition duration-200 flex items-center gap-1">
-                              Explore Chapters & Flashcards →
+                      <div className={`h-3 bg-gradient-to-r ${book.color}`}></div>
+                      <div className="p-6 flex-1 flex flex-col justify-between">
+                        <div>
+                          <div className="flex items-center justify-between mb-3">
+                            <span className="text-xs font-extrabold uppercase text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-lg">
+                              {book.category.split('&')[0]}
+                            </span>
+                            <span className="text-xs font-bold text-slate-400 bg-slate-100 px-2 py-1 rounded-md">
+                              {book.chapters.length} Chapters
                             </span>
                           </div>
+                          <h3 className="text-xl font-bold text-slate-900 group-hover:text-indigo-600 transition mb-1">
+                            {book.title}
+                          </h3>
+                          <p className="text-xs font-semibold text-slate-500 mb-3">By {book.author}</p>
+                          <p className="text-slate-600 text-sm line-clamp-2">
+                            {book.description}
+                          </p>
+                        </div>
+                        <div className="mt-6 pt-4 border-t border-slate-100">
+                          <span className="text-xs font-bold text-indigo-600">
+                            Explore Chapters & Flashcards →
+                          </span>
                         </div>
                       </div>
-                    ))}
-                  </div>
-                )}
+                    </div>
+                  ))}
+                </div>
               </div>
             ) : (
-              /* Reader & Flashcards View */
               <div className="max-w-4xl mx-auto">
                 <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 sm:p-10 mb-8">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                     <div>
-                      <span className="bg-indigo-50 text-indigo-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                      <span className="bg-indigo-50 text-indigo-700 text-xs font-bold px-3 py-1 rounded-full uppercase">
                         {selectedBook.category}
                       </span>
                       <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-2">{selectedBook.title}</h2>
                       <p className="text-sm font-semibold text-slate-500 mt-1">Written by {selectedBook.author}</p>
                     </div>
-                    {/* View Switcher Tabs */}
                     <div className="flex bg-slate-100 p-1.5 rounded-2xl self-start">
                       <button
                         onClick={() => setActiveTab('chapters')}
                         className={`px-4 py-2 rounded-xl text-sm font-bold transition ${
-                          activeTab === 'chapters' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-600 hover:text-slate-900'
+                          activeTab === 'chapters' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-600'
                         }`}
                       >
                         📖 Chapters ({selectedBook.chapters.length})
@@ -638,41 +383,31 @@
                       <button
                         onClick={() => { setActiveTab('flashcards'); setCurrentCardIndex(0); setIsFlipped(false); }}
                         className={`px-4 py-2 rounded-xl text-sm font-bold transition ${
-                          activeTab === 'flashcards' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-600 hover:text-slate-900'
+                          activeTab === 'flashcards' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-600'
                         }`}
                       >
                         🎴 Flashcards
                       </button>
                     </div>
                   </div>
-                  <p className="text-slate-600 text-sm sm:text-base leading-relaxed bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                    {selectedBook.description}
-                  </p>
                 </div>
 
-                {/* Tab 1: Chapter Summaries */}
                 {activeTab === 'chapters' && (
                   <div className="space-y-4">
-                    <h3 className="text-xl font-bold text-slate-900 mb-4 px-2">Chapter-by-Chapter Key Takeaways</h3>
+                    <h3 className="text-xl font-bold text-slate-900 mb-4 px-2">Chapter Key Takeaways</h3>
                     {selectedBook.chapters.map((ch, idx) => (
-                      <div key={idx} className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm hover:border-indigo-200 transition">
-                        <div className="flex items-start justify-between gap-4 mb-2">
-                          <h4 className="text-base font-bold text-indigo-900">
-                            Chapter {ch.number || idx + 1}: {ch.title}
-                          </h4>
-                          <span className="text-xs font-bold text-slate-400 bg-slate-100 px-2.5 py-1 rounded-lg">
-                            #{(idx + 1)}
-                          </span>
-                        </div>
-                        <p className="text-slate-700 text-sm leading-relaxed">
-                          <strong className="text-slate-900 font-semibold">Key Takeaway:</strong> {ch.takeaway}
+                      <div key={idx} className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+                        <h4 className="text-base font-bold text-indigo-900 mb-1">
+                          Chapter {ch.number || idx + 1}: {ch.title}
+                        </h4>
+                        <p className="text-slate-700 text-sm">
+                          <strong className="text-slate-900 font-semibold">Takeaway:</strong> {ch.takeaway}
                         </p>
                       </div>
                     ))}
                   </div>
                 )}
 
-                {/* Tab 2: Interactive Flashcard Mode */}
                 {activeTab === 'flashcards' && (
                   <div className="flex flex-col items-center">
                     <div className="w-full max-w-xl mb-4 flex items-center justify-between px-2">
@@ -680,62 +415,52 @@
                         Card {currentCardIndex + 1} of {selectedBook.chapters.length}
                       </span>
                       <span className="text-xs font-bold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full">
-                        Click card to flip
+                        Tap card to flip
                       </span>
                     </div>
 
-                    {/* 3D Flashcard */}
                     <div 
                       className="w-full max-w-xl h-80 perspective-1000 cursor-pointer select-none"
                       onClick={() => setIsFlipped(!isFlipped)}
                     >
                       <div className={`relative w-full h-full duration-500 transform-style-3d ${isFlipped ? 'rotate-y-180' : ''}`}>
-                        {/* Front of Card */}
                         <div className="absolute inset-0 w-full h-full bg-white border border-slate-200 rounded-3xl p-8 shadow-md flex flex-col justify-between backface-hidden">
-                          <div className="flex justify-between items-center">
-                            <span className="text-xs font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full">
-                              Chapter {selectedBook.chapters[currentCardIndex].number || currentCardIndex + 1}
-                            </span>
-                            <span className="text-xs text-slate-400 font-semibold">Front</span>
-                          </div>
+                          <span className="text-xs font-bold uppercase text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full self-start">
+                            Chapter {selectedBook.chapters[currentCardIndex].number || currentCardIndex + 1}
+                          </span>
                           <div className="text-center my-auto">
                             <h3 className="text-xl sm:text-2xl font-bold text-slate-900">
                               {selectedBook.chapters[currentCardIndex].title}
                             </h3>
                           </div>
                           <p className="text-center text-xs font-bold text-slate-400 tracking-wide uppercase">
-                            Tap to reveal key takeaway ↓
+                            Click to reveal key takeaway ↓
                           </p>
                         </div>
 
-                        {/* Back of Card */}
                         <div className="absolute inset-0 w-full h-full bg-slate-900 text-white border border-slate-800 rounded-3xl p-8 shadow-xl flex flex-col justify-between backface-hidden rotate-y-180">
-                          <div className="flex justify-between items-center">
-                            <span className="text-xs font-bold uppercase tracking-wider text-emerald-400 bg-emerald-950 px-3 py-1 rounded-full">
-                              Key Takeaway
-                            </span>
-                            <span className="text-xs text-slate-400 font-semibold">Back</span>
-                          </div>
+                          <span className="text-xs font-bold uppercase text-emerald-400 bg-emerald-950 px-3 py-1 rounded-full self-start">
+                            Key Takeaway
+                          </span>
                           <div className="text-center my-auto">
                             <p className="text-base sm:text-lg font-medium text-slate-100 leading-relaxed">
                               "{selectedBook.chapters[currentCardIndex].takeaway}"
                             </p>
                           </div>
                           <p className="text-center text-xs font-bold text-slate-400 tracking-wide uppercase">
-                            Tap to flip back ↑
+                            Click to flip back ↑
                           </p>
                         </div>
                       </div>
                     </div>
 
-                    {/* Flashcard Navigation Controls */}
                     <div className="flex items-center space-x-4 mt-6">
                       <button 
                         onClick={() => {
                           setIsFlipped(false);
                           setCurrentCardIndex(prev => (prev > 0 ? prev - 1 : selectedBook.chapters.length - 1));
                         }}
-                        className="px-5 py-2.5 bg-white border border-slate-200 rounded-xl font-bold text-sm text-slate-700 hover:bg-slate-100 shadow-sm transition"
+                        className="px-5 py-2.5 bg-white border border-slate-200 rounded-xl font-bold text-sm text-slate-700 hover:bg-slate-100 shadow-sm"
                       >
                         ← Previous
                       </button>
@@ -744,7 +469,7 @@
                           setIsFlipped(false);
                           setCurrentCardIndex(prev => (prev < selectedBook.chapters.length - 1 ? prev + 1 : 0));
                         }}
-                        className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-sm shadow-md transition"
+                        className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-sm shadow-md"
                       >
                         Next Card →
                       </button>
@@ -755,49 +480,14 @@
             )}
           </main>
 
-          {/* Footer */}
           <footer className="bg-white border-t border-slate-200 py-8 mt-16 text-center text-slate-500 text-sm">
-            <p>© 2026 Book Learner App. All 18 books fully integrated.</p>
+            <p>© 2026 Book Learner App. All books fully integrated.</p>
           </footer>
         </div>
       );
     }
 
     ReactDOM.render(<App />, document.getElementById('root'));
-  </script>
-</body>
-<script type="module">
-    // 1. Import Firebase Core, Auth, and Firestore
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
-    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
-
-    // 2. Your Firebase Config
-    const firebaseConfig = {
-      apiKey: "AIzaSyCpD5Pb8oQl7fkcEhw36nPTBUrAg6l2L70",
-      authDomain: "book-learner-app.firebaseapp.com",
-      projectId: "book-learner-app",
-      storageBucket: "book-learner-app.firebasestorage.app",
-      messagingSenderId: "225126768050",
-      appId: "1:225126768050:web:2be85bb979b34b68f4d8ab",
-      measurementId: "G-1GMV26TH2N"
-    };
-
-    // 3. Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    // 4. Expose Auth & Firestore to global window for your React code
-    window.firebaseAuth = auth;
-    window.firebaseDb = db;
-    window.GoogleAuthProvider = GoogleAuthProvider;
-    window.signInWithPopup = signInWithPopup;
-    window.signOut = signOut;
-    window.onAuthStateChanged = onAuthStateChanged;
-    window.firestoreDoc = doc;
-    window.firestoreSetDoc = setDoc;
-    window.firestoreGetDoc = getDoc;
   </script>
 </body>
 </html>
