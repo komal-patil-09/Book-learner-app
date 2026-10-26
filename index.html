@@ -53,8 +53,6 @@
   </script>
 
   <script type="text/babel">
-    const { useState, useEffect, useMemo } = React;
-
     const BOOKS_DATA = [
       {
         id: "lords-of-easy-money",
@@ -177,16 +175,16 @@
     ];
 
     function App() {
-      const [currentView, setCurrentView] = useState('library');
-      const [selectedBook, setSelectedBook] = useState(null);
-      const [activeTab, setActiveTab] = useState('chapters');
-      const [searchQuery, setSearchQuery] = useState('');
-      const [selectedCategory, setSelectedCategory] = useState('All');
-      const [currentCardIndex, setCurrentCardIndex] = useState(0);
-      const [isFlipped, setIsFlipped] = useState(false);
-      const [user, setUser] = useState(null);
+      const [currentView, setCurrentView] = React.useState('library');
+      const [selectedBook, setSelectedBook] = React.useState(null);
+      const [activeTab, setActiveTab] = React.useState('chapters');
+      const [searchQuery, setSearchQuery] = React.useState('');
+      const [selectedCategory, setSelectedCategory] = React.useState('All');
+      const [currentCardIndex, setCurrentCardIndex] = React.useState(0);
+      const [isFlipped, setIsFlipped] = React.useState(false);
+      const [user, setUser] = React.useState(null);
 
-      useEffect(() => {
+      React.useEffect(() => {
         const interval = setInterval(() => {
           if (window.firebaseAuth && window.onAuthStateChanged) {
             clearInterval(interval);
@@ -217,7 +215,7 @@
 
       const categories = ['All', 'Finance & Economics', 'Personal Development', 'Biography & Sports', 'Entrepreneurship & Business', 'Indian Literature & Leadership'];
 
-      const filteredBooks = useMemo(() => {
+      const filteredBooks = React.useMemo(() => {
         return BOOKS_DATA.filter(book => {
           const matchesSearch = book.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
                                 book.author.toLowerCase().includes(searchQuery.toLowerCase());
